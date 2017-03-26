@@ -59,10 +59,11 @@ public class TypesExample {
         waitEntry();
 
         // /////////////////////////////////////////////////////////////////////////
-        // Forward Chaining
+        // Forward Chaining ({A(a1, . . . , an)}, Σ)
         // /////////////////////////////////////////////////////////////////////////
         writer.write("\n=========================================\n");
         writer.write("=           Forward Chaining            =\n");
+        writer.write("=      Chase({A(a1, . . . , an)}, Σ)    =\n");
         writer.write("=========================================\n");
 
         // 8 - Apply a naive chase (forward chaining) on data
@@ -74,6 +75,7 @@ public class TypesExample {
         writer.write(store);
         writer.flush();
 
+        // todo: use graal-homomorphism to find all homomorphisms from B to Chase({A(a1,...,an)},Σ).
 
     }
 
