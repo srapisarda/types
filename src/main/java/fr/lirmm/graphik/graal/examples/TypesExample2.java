@@ -5,7 +5,6 @@ import fr.lirmm.graphik.graal.api.forward_chaining.Chase;
 import fr.lirmm.graphik.graal.api.forward_chaining.ChaseException;
 import fr.lirmm.graphik.graal.api.homomorphism.HomomorphismException;
 import fr.lirmm.graphik.graal.core.DefaultAtom;
-import fr.lirmm.graphik.graal.core.TreeMapSubstitution;
 import fr.lirmm.graphik.graal.core.ruleset.LinkedListRuleSet;
 import fr.lirmm.graphik.graal.core.term.DefaultTermFactory;
 import fr.lirmm.graphik.graal.forward_chaining.NaiveChase;
@@ -18,9 +17,7 @@ import fr.lirmm.graphik.util.stream.CloseableIterator;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by Salvatore Rapisarda
@@ -28,23 +25,21 @@ import java.util.Scanner;
  */
 public class TypesExample2 {
 
-    private static Scanner scan = new Scanner(System.in);
     private static DlgpWriter writer;
 
-
     public static void main(String[] args) throws AtomSetException, IOException, HomomorphismException, ChaseException {
-        String file = "types1.dlp";
+        String file = "types3.dlp";
+        String squery = "?(X, Y) :- r(X, Y).";
 
-        if (args.length > 0) {
+        if (args.length > 0)
             file = args[1];
-        }
 
+        if (args.length > 1)
+            squery = args[2];
 
         // 0 - Create a Dlgp writer and a structure to store rules.
         writer = new DlgpWriter();
-
-
-        List<AtomSet> stores = new ArrayList<>();
+        ConjunctiveQuery query = DlgpParser.parseQuery(squery);
 
         // 2 - Parse Animals.dlp (A Dlgp file with rules and facts)
         DlgpParser dlgpParser = new DlgpParser(new File("./src/main/resources/" + file));
@@ -74,7 +69,10 @@ public class TypesExample2 {
 
         facts.forEach(fact -> {
             try {
-                fn(ontology, fact);
+                BagType bagType = getBagType(ontology, fact, query);
+                if (! bagType.getSubstitutions().isEmpty() ){
+                    writer.write(bagType);
+                }
             } catch (ChaseException | HomomorphismException | IOException | AtomSetException e) {
                 e.printStackTrace();
             }
@@ -85,36 +83,26 @@ public class TypesExample2 {
     }
 
 
-    private static void fn(RuleSet ontology, Atom fact) throws ChaseException, IOException, HomomorphismException, AtomSetException {
-        AtomSet store = new DefaultRdbmsStore(new HSQLDBDriver("test", null));
+    private static BagType getBagType(RuleSet onto, Atom fact, ConjunctiveQuery query ) throws ChaseException, IOException, HomomorphismException, AtomSetException {
+        RuleSet ontology = new LinkedListRuleSet(onto);
+        Set<Substitution> resultsLabelNull = new HashSet<>();
+        BagType bagType = new BagType(fact,  resultsLabelNull);
+        AtomSet store = new DefaultRdbmsStore(new HSQLDBDriver( UUID.randomUUID().toString(), null));
         store.add(fact);
+        // Chase
         Chase chase = new NaiveChase(ontology, store);
         chase.execute();
-
-//        // Print the saturated database
-//        writer.write("\n= Facts =\n");
-//        writer.write(store);
-//        writer.flush();
-
-
-        ConjunctiveQuery query = DlgpParser.parseQuery("?(X, Y) :- r(X, Y).");
-        // Query saturated data with the original query
-        writer.write("\n= Answers =\n");
+        // Homomorphism
         CloseableIterator<Substitution> results = StaticHomomorphism.instance().execute(query, store);
         while (results.hasNext()) {
             Substitution substitution = results.next();
             if (substitution.getValues().stream().anyMatch(p -> p.getLabel().startsWith("EE"))) {
-                writer.write(substitution.toString());
-                writer.write("\n");
+                resultsLabelNull.add(substitution);
             }
         }
 
+        return bagType;
     }
 
 
-    private static void waitEntry() throws IOException {
-        writer.write("\n<PRESS ENTER TO CONTINUE>");
-        writer.flush();
-        scan.nextLine();
-    }
 }
