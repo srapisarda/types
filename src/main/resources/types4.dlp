@@ -1,5 +1,5 @@
 
 %% TGDs RULES
-s(X, Y) :- u(X, Y).
-r(X, Y) :- s(X, Y, Z).
+s(X, Y, Z) :- u(X, Y).
+r(X, Z) :- s(X, Y, Z).
 r(Z, Y) :- s(X, Y, Z).
