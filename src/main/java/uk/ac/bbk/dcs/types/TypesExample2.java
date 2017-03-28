@@ -67,13 +67,18 @@ public class TypesExample2 {
             }
         }
 
-        facts.forEach(fact -> {
+        facts.forEach((Atom fact) -> {
             try {
-                BagType bagType = getBagType(ontology, fact, query);
-                if (! bagType.getSubstitutions().isEmpty() ){
-                    writer.write(bagType);
+                Set<Type> bagType = getBagType(ontology, fact, query);
+                 bagType.forEach(p -> {
+                     try {
+                         writer.write(p);
+                     } catch (IOException e) {
+                         e.printStackTrace();
+                     }
+                 });
 
-                }
+
             } catch (ChaseException | HomomorphismException | IOException | AtomSetException e) {
                 e.printStackTrace();
             }
@@ -84,10 +89,10 @@ public class TypesExample2 {
     }
 
 
-    private static BagType getBagType(RuleSet onto, Atom fact, ConjunctiveQuery query ) throws ChaseException, IOException, HomomorphismException, AtomSetException {
+    private static Set<Type> getBagType(RuleSet onto, Atom fact, ConjunctiveQuery query ) throws ChaseException, IOException, HomomorphismException, AtomSetException {
         RuleSet ontology = new LinkedListRuleSet(onto);
-        Set<Substitution> resultsLabelNull = new HashSet<>();
-        BagType bagType = new BagType(fact,  resultsLabelNull);
+        Set<Type> resultsLabelNull = new HashSet<>();
+
         AtomSet store = new DefaultRdbmsStore(new HSQLDBDriver( UUID.randomUUID().toString(), null));
         store.add(fact);
         // Chase
@@ -98,11 +103,11 @@ public class TypesExample2 {
         while (results.hasNext()) {
             Substitution substitution = results.next();
             if (substitution.getValues().stream().anyMatch(p -> p.getLabel().startsWith("EE"))) {
-                resultsLabelNull.add(substitution);
+                resultsLabelNull.add( new Type( fact, substitution) );
             }
         }
 
-        return bagType;
+        return resultsLabelNull;
     }
 
 
