@@ -1,4 +1,4 @@
-package fr.lirmm.graphik.graal.examples;
+package uk.ac.bbk.dcs.types;
 
 import fr.lirmm.graphik.graal.api.core.*;
 import fr.lirmm.graphik.graal.api.forward_chaining.Chase;
@@ -28,7 +28,7 @@ public class TypesExample2 {
     private static DlgpWriter writer;
 
     public static void main(String[] args) throws AtomSetException, IOException, HomomorphismException, ChaseException {
-        String file = "types3.dlp";
+        String file = "types4.dlp";
         String squery = "?(X, Y) :- r(X, Y).";
 
         if (args.length > 0)
@@ -72,6 +72,7 @@ public class TypesExample2 {
                 BagType bagType = getBagType(ontology, fact, query);
                 if (! bagType.getSubstitutions().isEmpty() ){
                     writer.write(bagType);
+
                 }
             } catch (ChaseException | HomomorphismException | IOException | AtomSetException e) {
                 e.printStackTrace();
