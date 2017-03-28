@@ -5,9 +5,8 @@ import com.google.common.collect.ImmutableSet;
 import fr.lirmm.graphik.graal.api.core.Atom;
 import fr.lirmm.graphik.graal.api.core.Substitution;
 import fr.lirmm.graphik.graal.api.core.Term;
-import fr.lirmm.graphik.graal.api.core.Variable;
 import fr.lirmm.graphik.graal.core.term.DefaultTermFactory;
-import uk.ac.bbk.dcs.types.uk.ac.bbk.dcs.util.ImmutableCollectors;
+import uk.ac.bbk.dcs.util.ImmutableCollectors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +28,6 @@ public class Type {
 
     }
 
-
     ImmutableList<Term> getVar1() {
         return homomorphism.getTerms()
                         .stream()
@@ -44,14 +42,15 @@ public class Type {
                 .filter(t -> homomorphism.createImageOf(t).getLabel().startsWith("EE"))
                 .collect(ImmutableCollectors.toList());
 
-
         ImmutableList.Builder<Term> builder = new ImmutableList.Builder<>();
         if ( ! ee.isEmpty()){
-            genAtom
-                    .values()
+            genAtom.values()
                     .stream()
                     .distinct()
-                    .forEach( atom-> atom.getTerms().forEach(term -> builder.add( DefaultTermFactory.instance().createVariable( "v" +  term.getLabel() ) ) ));
+                    .forEach( atom-> atom.getTerms()
+                            .forEach(term -> builder.add(
+                                    DefaultTermFactory
+                                            .instance().createVariable( "v" +  term.getLabel()))));
         }
 
 

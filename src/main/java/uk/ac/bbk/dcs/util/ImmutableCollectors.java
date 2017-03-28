@@ -1,4 +1,4 @@
-package uk.ac.bbk.dcs.types.uk.ac.bbk.dcs.util;
+package uk.ac.bbk.dcs.util;
 
 import com.google.common.collect.*;
 

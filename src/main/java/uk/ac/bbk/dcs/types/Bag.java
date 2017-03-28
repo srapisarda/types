@@ -4,9 +4,8 @@ import com.google.common.collect.ImmutableList;
 import fr.lirmm.graphik.graal.api.core.Atom;
 import fr.lirmm.graphik.graal.api.core.Substitution;
 import fr.lirmm.graphik.graal.api.core.Term;
-import uk.ac.bbk.dcs.types.uk.ac.bbk.dcs.util.ImmutableCollectors;
+import uk.ac.bbk.dcs.util.ImmutableCollectors;
 
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
