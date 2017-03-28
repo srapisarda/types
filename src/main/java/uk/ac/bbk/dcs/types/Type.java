@@ -1,32 +1,44 @@
 package uk.ac.bbk.dcs.types;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.lirmm.graphik.graal.api.core.Atom;
 import fr.lirmm.graphik.graal.api.core.Substitution;
 import fr.lirmm.graphik.graal.api.core.Term;
+import fr.lirmm.graphik.graal.core.TreeMapSubstitution;
 import fr.lirmm.graphik.graal.core.term.DefaultTermFactory;
 import uk.ac.bbk.dcs.util.ImmutableCollectors;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Salvatore Rapisarda
  * on 27/03/2017.
  */
 public class Type {
-    private final Map<Term, Atom> genAtom;
+    private final ImmutableMap<Term, Atom> genAtom;
     private final Substitution homomorphism;
 
-    Type (Atom atom, Substitution homomorphism) {
-        this.genAtom = new HashMap<>();
-        homomorphism.getTerms().forEach(
-                term->  this.genAtom.put(  DefaultTermFactory.instance().createVariable( "v" +  term.getLabel() )  ,  atom)
-        );
+
+    Type (ImmutableMap<Term, Atom> genAtoms, Substitution homomorphism) {
+
+        this.genAtom = genAtoms;
         this.homomorphism = homomorphism;
 
     }
+
+    Type (Atom atom, Substitution homomorphism) {
+        ImmutableMap.Builder<Term,Atom> getAtomBuilder = new ImmutableMap.Builder<>();
+        homomorphism.getTerms().forEach(
+                term->  getAtomBuilder.put(
+                        DefaultTermFactory.instance().createVariable( "v" +  term.getLabel() )  ,  atom)
+        );
+        genAtom = getAtomBuilder.build();
+        this.homomorphism = homomorphism;
+
+    }
+
+
+
 
     ImmutableList<Term> getVar1() {
         return homomorphism.getTerms()
@@ -61,18 +73,28 @@ public class Type {
         return ImmutableSet.copyOf(homomorphism.getTerms());
     }
 
+
+    /**
+     * This method makes a union of the self object and the type
+     * We assume that the types are compatible,
+     * which it means that they are coincide on their common domain
+     * @param type is a {@link Type}
+     * @return a {@link Type}
+     */
     Type union ( Type type){
 
-        // todo: merge atoms and homomorphism
-
         if ( type == null )
-            return this;
+            return new  Type(this.genAtom, this.homomorphism );
 
+        ImmutableMap.Builder<Term, Atom> genAtomBuilder = new ImmutableMap.Builder<>();
+        genAtomBuilder.putAll(this.genAtom).putAll(type.genAtom);
 
+        Substitution substitution = new  TreeMapSubstitution (homomorphism);
+        substitution.put( type.homomorphism);
 
-        // Type  t = new Type( this.a )
+        ImmutableMap<Term, Atom> genAtoms = genAtomBuilder.build();
 
-        return null;
+        return new Type(genAtoms, substitution );
     }
 
 
