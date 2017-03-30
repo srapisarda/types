@@ -57,6 +57,8 @@ public class Type {
         return  builder.build();
     }
 
+
+
     ImmutableSet<Term> getDomain() {
         return ImmutableSet.copyOf(homomorphism.getTerms());
     }
@@ -87,9 +89,9 @@ public class Type {
 
 
     /**
-     *
-     * @param dest
-     * @return
+     * This method  returns the projection of a give type on to a set of variables
+     * @param dest is a set of variables
+     * @return a new {@link Type}
      */
     Type projection(ImmutableSet<Term> dest ){
         Substitution homomorphismProj= new TreeMapSubstitution();
