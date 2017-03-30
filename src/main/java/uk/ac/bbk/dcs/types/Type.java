@@ -97,7 +97,7 @@ public class Type {
         Substitution homomorphismProj= new TreeMapSubstitution();
         homomorphism.getTerms().forEach( term-> {
             Term variable = homomorphism.createImageOf(term);
-            if ( dest.contains(variable) ){
+            if ( dest.contains(term) ){
                 homomorphismProj.put(term,variable);
             }
         });
