@@ -58,7 +58,10 @@ public class Type {
     }
 
 
-
+    /**
+     * Thi method returns the type domain
+     * @return a set of {@link Term}s which is the domain
+     */
     ImmutableSet<Term> getDomain() {
         return ImmutableSet.copyOf(homomorphism.getTerms());
     }
@@ -72,7 +75,6 @@ public class Type {
      * @return a {@link Type}
      */
     Type union ( Type type){
-
         if ( type == null )
             return new  Type(this.genAtom, this.homomorphism );
 

@@ -24,7 +24,7 @@ import java.util.*;
  * Created by Salvatore Rapisarda
  * on 26/03/2017.
  */
-public class TypesExample2 {
+public class TypesExample {
 
     private static DlgpWriter writer;
 
