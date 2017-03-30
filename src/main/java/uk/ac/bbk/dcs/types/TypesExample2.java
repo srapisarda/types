@@ -1,5 +1,6 @@
 package uk.ac.bbk.dcs.types;
 
+import com.google.common.collect.ImmutableMap;
 import fr.lirmm.graphik.graal.api.core.*;
 import fr.lirmm.graphik.graal.api.forward_chaining.Chase;
 import fr.lirmm.graphik.graal.api.forward_chaining.ChaseException;
@@ -103,7 +104,7 @@ public class TypesExample2 {
         while (results.hasNext()) {
             Substitution substitution = results.next();
             if (substitution.getValues().stream().anyMatch(p -> p.getLabel().startsWith("EE"))) {
-                resultsLabelNull.add( new Type( fact, substitution) );
+                resultsLabelNull.add( new Type(  ImmutableMap.of( fact.getTerm(1) , fact), substitution) );
             }
         }
 

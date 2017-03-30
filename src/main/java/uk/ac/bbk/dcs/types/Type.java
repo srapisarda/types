@@ -11,7 +11,10 @@ import fr.lirmm.graphik.graal.core.term.DefaultTermFactory;
 import uk.ac.bbk.dcs.util.ImmutableCollectors;
 
 /**
- * Created by Salvatore Rapisarda
+ * Created by :
+ *      Salvatore Rapisarda
+ *      Stanislav Kikot
+ *
  * on 27/03/2017.
  */
 public class Type {
@@ -20,30 +23,15 @@ public class Type {
 
 
     Type (ImmutableMap<Term, Atom> genAtoms, Substitution homomorphism) {
-
         this.genAtom = genAtoms;
         this.homomorphism = homomorphism;
 
     }
 
-    Type (Atom atom, Substitution homomorphism) {
-        ImmutableMap.Builder<Term,Atom> getAtomBuilder = new ImmutableMap.Builder<>();
-        homomorphism.getTerms().forEach(
-                term->  getAtomBuilder.put(
-                        DefaultTermFactory.instance().createVariable( "v" +  term.getLabel() )  ,  atom)
-        );
-        genAtom = getAtomBuilder.build();
-        this.homomorphism = homomorphism;
-
-    }
-
-
-
-
     ImmutableList<Term> getVar1() {
         return homomorphism.getTerms()
                         .stream()
-                        .filter(t -> homomorphism.createImageOf(t).getLabel().startsWith("a"))
+                        .filter(t -> homomorphism.createImageOf(t).getLabel().startsWith("epsilon"))
                         .collect(ImmutableCollectors.toList());
     }
 
@@ -95,6 +83,31 @@ public class Type {
         ImmutableMap<Term, Atom> genAtoms = genAtomBuilder.build();
 
         return new Type(genAtoms, substitution );
+    }
+
+
+    /**
+     *
+     * @param dest
+     * @return
+     */
+    Type projection(ImmutableSet<Term> dest ){
+        Substitution homomorphismProj= new TreeMapSubstitution();
+        homomorphism.getTerms().forEach( term-> {
+            Term variable = homomorphism.createImageOf(term);
+            if ( dest.contains(variable) ){
+                homomorphismProj.put(term,variable);
+            }
+        });
+
+        ImmutableMap<Term, Atom> genAtomProj =
+                genAtom.entrySet()
+                        .stream()
+                        .filter(entry -> dest.contains(entry.getKey()))
+                        .collect(ImmutableCollectors.toMap());
+
+        return new Type( genAtomProj, homomorphismProj);
+
     }
 
 
