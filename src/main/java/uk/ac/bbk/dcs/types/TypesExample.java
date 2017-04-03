@@ -48,8 +48,7 @@ public class TypesExample {
 
         List<Atom> facts = new ArrayList<>();
         while (dlgpParser.hasNext()) {
-            // 1 - Create a relational database store with HSQLDB (An InMemory Java
-            // database system),
+            // 1 - Create a relational database store with HSQLDB (An InMemory Java database system),
             Object o = dlgpParser.next();
             if (o instanceof Atom) {
                 facts.add((Atom) o);
