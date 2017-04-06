@@ -32,7 +32,7 @@ public class TreeDecompositionTest {
 
         ImmutableMap.Builder<String, ImmutableList<String>> builder = new ImmutableMap.Builder<>();
         builder.put("r1", ImmutableList.of("X2", "X3"));
-        builder.put("s1", ImmutableList.of("X5", "X6"));
+        builder.put("s1", ImmutableList.of("X3", "X4"));
         builder.put("s2", ImmutableList.of("X4", "X5"));
         builder.put("r2", ImmutableList.of("X6", "X7"));
         builder.put("r0", ImmutableList.of("X1", "X2"));
@@ -61,6 +61,8 @@ public class TreeDecompositionTest {
         Assert.assertNotNull(t);
 
         Assert.assertEquals( ImmutableSet.copyOf( atoms.asList().get(0).getTerms() ),  t.getRoot().getVariables()  );
+
+         System.out.println(   "root: " +   t.getRoot().getVariables() );
     }
 
 }

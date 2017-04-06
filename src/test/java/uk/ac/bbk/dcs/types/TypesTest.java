@@ -9,9 +9,9 @@ import fr.lirmm.graphik.graal.api.core.Term;
 import fr.lirmm.graphik.graal.core.DefaultAtom;
 import fr.lirmm.graphik.graal.core.TreeMapSubstitution;
 import fr.lirmm.graphik.graal.core.term.DefaultTermFactory;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sun.jvm.hotspot.utilities.Assert;
 
 /**
  * Created by Salvatore Rapisarda
@@ -65,7 +65,7 @@ public class TypesTest {
 
         System.out.println( "union: type1 U type2: " +  actual ) ;
 
-        Assert.that( actual.getDomain().size() ==3 , "X, Y, Z");
+        Assert.assertTrue(actual.getDomain().size() ==3 );
     }
 
     @Test
@@ -79,7 +79,7 @@ public class TypesTest {
 
         System.out.println( "projection : proj(x, y) from (type1 U type2): " +  actual ) ;
 
-        Assert.that( actual.getDomain().size() ==2 , "X, Y");
+        Assert.assertTrue( actual.getDomain().size() ==2 );
     }
 
 
