@@ -33,13 +33,12 @@ public class TreeDecompositionTest {
         builder.put("r1", ImmutableList.of("X2", "X3"));
         builder.put("s1", ImmutableList.of("X3", "X4"));
         builder.put("s2", ImmutableList.of("X4", "X5"));
-        builder.put("r2", ImmutableList.of("X6", "X7"));
+        builder.put("r2", ImmutableList.of("X5", "X6"));
+        builder.put("s3", ImmutableList.of("X6", "X7"));
         builder.put("r0", ImmutableList.of("X1", "X2"));
         builder.put("s0", ImmutableList.of("X0", "X1"));
 
-
         TermFactory tf = DefaultTermFactory.instance();
-
         ImmutableSet<Atom> atoms = builder.build().entrySet().stream()
                 .map(entry -> {
                     List<Term> rterms = entry.getValue().stream()
@@ -52,18 +51,11 @@ public class TreeDecompositionTest {
 
         Graph graph = new TinkerGraph();
         InputStream in = getClass().getResourceAsStream("/Q7.gml");
-
         GMLReader.inputGraph(graph, in);
-
-        TreeDecomposition t = new TreeDecomposition(atoms, graph );
-
+        TreeDecomposition t = new TreeDecomposition(atoms, graph,null );
         Assert.assertNotNull(t);
-
         Assert.assertEquals( ImmutableSet.copyOf( atoms.asList().get(0).getTerms() ),  t.getRoot().getVariables()  );
-
-         System.out.println(   "root: " +   t.getRoot().getVariables() );
-
-
+        System.out.println(   "root: " +   t.getRoot().getVariables() );
         Assert.assertEquals( 2, t.getChildes().size());
     }
 

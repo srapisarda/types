@@ -22,40 +22,48 @@ import static com.tinkerpop.blueprints.Direction.OUT;
 
 /**
  * Created by :
- *          Salvatore Rapisarda
- *          Stanislav Kikot
- *
+ * Salvatore Rapisarda
+ * Stanislav Kikot
+ * <p>
  * on 30/03/2017.
  */
 public class TreeDecomposition {
     private Bag root;
-//    private ImmutableMap< Bag, ImmutableSet<Bag>> successor;
+    //    private ImmutableMap< Bag, ImmutableSet<Bag>> successor;
     private ImmutableMap<Predicate, Atom> mapCqAtoms;
 
     private ImmutableList<TreeDecomposition> childes = null;
 
-    TreeDecomposition (ImmutableSet <Atom> cqAtoms, Graph graph) throws IOException {
-        this.mapCqAtoms = cqAtoms.stream().collect(ImmutableCollectors.toMap(Atom::getPredicate, atom-> atom ));
+    TreeDecomposition(ImmutableSet<Atom> cqAtoms, Graph graph, Vertex v) throws IOException {
+        this.mapCqAtoms = cqAtoms.stream().collect(ImmutableCollectors.toMap(Atom::getPredicate, atom -> atom));
 
-        Optional<Vertex> first = Streams.stream(graph.getVertices()).findFirst();
-            if (root == null && first.isPresent()) {
-                ImmutableList.Builder<TreeDecomposition> childBuilder = new ImmutableList.Builder<>();
-                Vertex vertex = first.get();
-                root = getBagFromVertex(vertex);
 
-                for (Edge edge : vertex.getEdges(OUT)) {
-                    Graph g = getSubGraph(graph, vertex, edge);
-                    childBuilder.add(new TreeDecomposition(cqAtoms, g));
-                }
+        Vertex vertex = null;
+        if (v != null) {
+            vertex = v;
+        } else {
+            Optional<Vertex> first = Streams.stream(graph.getVertices()).findFirst();
+            if (first.isPresent())
+                vertex = first.get();
+        }
 
-                this.childes =  childBuilder.build();
+        ImmutableList.Builder<TreeDecomposition> childBuilder = new ImmutableList.Builder<>();
 
-            }
+        root = getBagFromVertex(vertex);
+
+        for (Edge edge : vertex.getEdges(OUT)) {
+            Graph g = getSubGraph(graph, vertex, edge);
+            childBuilder.add(new TreeDecomposition(cqAtoms, g, edge.getVertex(IN)));
+        }
+
+        this.childes = childBuilder.build();
+
+
 
     }
 
 
-    private Graph getSubGraph( Graph graph, Vertex vertex, Edge edge) {
+    private Graph getSubGraph(Graph graph, Vertex vertex, Edge edge) {
         Graph g = new TinkerGraph();
         graph.getVertices().forEach(v -> {
             if (!vertex.equals(v)) {
@@ -74,11 +82,11 @@ public class TreeDecomposition {
     }
 
 
-    private Bag getBagFromVertex(Vertex vertex){
+    private Bag getBagFromVertex(Vertex vertex) {
         String label = vertex.getProperty("label");
         String[] split = label.split("    ");
-        if ( split.length != 2)
-            throw  new RuntimeException("Incorrect vertex label.");
+        if (split.length != 2)
+            throw new RuntimeException("Incorrect vertex label.");
 
         ImmutableList<String> predicates = Arrays.stream(
                 getSpittedItems(split[0]))
@@ -96,7 +104,7 @@ public class TreeDecomposition {
 
     }
 
-    private String [] getSpittedItems( String val ){
+    private String[] getSpittedItems(String val) {
         return val.replace("{", "")
                 .replace("}", "")
                 .split(", ");
