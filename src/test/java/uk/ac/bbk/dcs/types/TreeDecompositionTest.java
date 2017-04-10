@@ -18,7 +18,6 @@ import uk.ac.bbk.dcs.util.ImmutableCollectors;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +62,9 @@ public class TreeDecompositionTest {
         Assert.assertEquals( ImmutableSet.copyOf( atoms.asList().get(0).getTerms() ),  t.getRoot().getVariables()  );
 
          System.out.println(   "root: " +   t.getRoot().getVariables() );
+
+
+        Assert.assertEquals( 2, t.getChildes().size());
     }
 
 }
