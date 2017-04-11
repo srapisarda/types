@@ -3,10 +3,16 @@ package uk.ac.bbk.dcs.types;
 import fr.lirmm.graphik.graal.api.core.RuleSet;
 
 /**
- * Created by Salvatore Rapisarda
+ * Created by :
+ *      Salvatore Rapisarda
+ *      Stanislav Kikot
+ * <p>
  * on 28/03/2017.
  */
 public class QueryRewriter {
+    TreeDecomposition treeDecomposition;
+
+
 
     public static RuleSet rewrite(){
 

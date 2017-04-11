@@ -26,4 +26,4 @@ hs_err_pid*
 .idea
 dependency-reduced-pom.xml
 target/
-getting-started.iml
+types.iml
