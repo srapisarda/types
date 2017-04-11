@@ -12,7 +12,6 @@ import fr.lirmm.graphik.graal.api.core.Atom;
 import fr.lirmm.graphik.graal.api.core.Predicate;
 import uk.ac.bbk.dcs.util.ImmutableCollectors;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -22,46 +21,47 @@ import static com.tinkerpop.blueprints.Direction.OUT;
 
 /**
  * Created by :
- * Salvatore Rapisarda
- * Stanislav Kikot
+ *      Salvatore Rapisarda
+ *      Stanislav Kikot
  * <p>
  * on 30/03/2017.
  */
-public class TreeDecomposition {
+class TreeDecomposition {
     private Bag root;
-    //    private ImmutableMap< Bag, ImmutableSet<Bag>> successor;
     private ImmutableMap<Predicate, Atom> mapCqAtoms;
-
     private ImmutableList<TreeDecomposition> childes = null;
 
-    TreeDecomposition(ImmutableSet<Atom> cqAtoms, Graph graph, Vertex v) throws IOException {
-        this.mapCqAtoms = cqAtoms.stream().collect(ImmutableCollectors.toMap(Atom::getPredicate, atom -> atom));
+    /**
+     * {@link TreeDecomposition} Constructor
+     * @param cqAtoms {@link ImmutableList} of {@link Atom}s
+     * @param graph {@link Graph}
+     * @param v {@link Vertex} which is null if is root
+     * @throws  RuntimeException if the tree does not contains any vertexes
+     */
+    TreeDecomposition(ImmutableSet<Atom> cqAtoms, Graph graph, Vertex v) throws RuntimeException {
 
+        this.mapCqAtoms = cqAtoms.stream()
+                .collect(ImmutableCollectors.toMap(Atom::getPredicate, atom -> atom));
 
-        Vertex vertex = null;
+        final Vertex vertex;
         if (v != null) {
             vertex = v;
         } else {
             Optional<Vertex> first = Streams.stream(graph.getVertices()).findFirst();
             if (first.isPresent())
                 vertex = first.get();
-        }
+            else
+                throw new RuntimeException("Vertex cannot be null!!"); // Todo: Add proper exception
 
-        ImmutableList.Builder<TreeDecomposition> childBuilder = new ImmutableList.Builder<>();
+        }
 
         root = getBagFromVertex(vertex);
-
-        for (Edge edge : vertex.getEdges(OUT)) {
+        this.childes = Streams.stream(vertex.getEdges(OUT)).map(edge -> {
             Graph g = getSubGraph(graph, vertex, edge);
-            childBuilder.add(new TreeDecomposition(cqAtoms, g, edge.getVertex(IN)));
-        }
-
-        this.childes = childBuilder.build();
-
-
+            return new TreeDecomposition(cqAtoms, g, edge.getVertex(IN));
+        }).collect(ImmutableCollectors.toList());
 
     }
-
 
     private Graph getSubGraph(Graph graph, Vertex vertex, Edge edge) {
         Graph g = new TinkerGraph();
@@ -84,7 +84,7 @@ public class TreeDecomposition {
 
     private Bag getBagFromVertex(Vertex vertex) {
         String label = vertex.getProperty("label");
-        String[] split = label.split("    ");
+        String[] split = label.split(" {4}");
         if (split.length != 2)
             throw new RuntimeException("Incorrect vertex label.");
 
@@ -104,18 +104,38 @@ public class TreeDecomposition {
 
     }
 
+    /**
+     * This method returns the size of the {@link TreeDecomposition}
+      * @return an int value
+     */
+    int  getSize(){
+        return getSize( this );
+    }
+
+    private  int getSize(TreeDecomposition t  ){
+        if ( t.childes == null || t.childes.isEmpty())
+            return 1;
+        else {
+             return t.childes
+                     .stream()
+                     .mapToInt(this::getSize)
+                     .sum() + 1;
+        }
+    }
+
+
     private String[] getSpittedItems(String val) {
         return val.replace("{", "")
                 .replace("}", "")
                 .split(", ");
     }
 
-    public Bag getRoot() {
+    Bag getRoot() {
         return root;
     }
 
-    public ImmutableList<TreeDecomposition> getChildes() {
+    ImmutableList<TreeDecomposition> getChildes() {
         return childes;
     }
-    // todo: implement this;
+
 }

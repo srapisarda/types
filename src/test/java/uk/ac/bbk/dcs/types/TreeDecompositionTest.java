@@ -57,6 +57,7 @@ public class TreeDecompositionTest {
         Assert.assertEquals( ImmutableSet.copyOf( atoms.asList().get(0).getTerms() ),  t.getRoot().getVariables()  );
         System.out.println(   "root: " +   t.getRoot().getVariables() );
         Assert.assertEquals( 2, t.getChildes().size());
+        Assert.assertEquals( 7, t.getSize());
     }
 
 }

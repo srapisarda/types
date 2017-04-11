@@ -12,7 +12,7 @@ import fr.lirmm.graphik.graal.api.core.RuleSet;
 public class QueryRewriter {
     TreeDecomposition treeDecomposition;
 
-
+//    public static
 
     public static RuleSet rewrite(){
 
