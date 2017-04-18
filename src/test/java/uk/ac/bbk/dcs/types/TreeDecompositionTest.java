@@ -41,11 +41,11 @@ public class TreeDecompositionTest {
         TermFactory tf = DefaultTermFactory.instance();
         ImmutableSet<Atom> atoms = builder.build().entrySet().stream()
                 .map(entry -> {
-                    List<Term> rterms = entry.getValue().stream()
-                            .map(term -> tf.createVariable(term))
+                    List<Term> terms = entry.getValue().stream()
+                            .map(tf::createVariable)
                             .collect(Collectors.toList());
-                    Predicate rPredicate = new Predicate(entry.getKey(), entry.getValue().size());
-                    return new DefaultAtom(rPredicate, rterms);
+                    Predicate predicate = new Predicate(entry.getKey(), entry.getValue().size());
+                    return new DefaultAtom(predicate, terms);
                 })
                 .collect(ImmutableCollectors.toSet());
 
@@ -58,6 +58,10 @@ public class TreeDecompositionTest {
         System.out.println(   "root: " +   t.getRoot().getVariables() );
         Assert.assertEquals( 2, t.getChildes().size());
         Assert.assertEquals( 7, t.getSize());
+        // assert splitter atoms's terms
+        t.getSplitter().getRoot().getVariables().forEach( term ->
+            Assert.assertTrue( ImmutableSet.of("X4", "X5").contains((String)term.getIdentifier()) )
+        );
     }
 
 }

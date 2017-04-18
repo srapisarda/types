@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static com.tinkerpop.blueprints.Direction.IN;
 import static com.tinkerpop.blueprints.Direction.OUT;
+import static java.util.function.Function.identity;
 
 /**
  * Created by :
@@ -41,7 +42,7 @@ class TreeDecomposition {
     TreeDecomposition(ImmutableSet<Atom> cqAtoms, Graph graph, Vertex v) throws RuntimeException {
 
         this.mapCqAtoms = cqAtoms.stream()
-                .collect(ImmutableCollectors.toMap(Atom::getPredicate, atom -> atom));
+                .collect(ImmutableCollectors.toMap(Atom::getPredicate, identity()));
 
         final Vertex vertex;
         if (v != null) {
@@ -137,5 +138,20 @@ class TreeDecomposition {
     ImmutableList<TreeDecomposition> getChildes() {
         return childes;
     }
+
+
+    TreeDecomposition getSplitter(){
+        return  getSplitter( this,  this.getSize());
+    }
+
+    // todo: make it tailrec
+    TreeDecomposition getSplitter( TreeDecomposition t, int rootSize){
+        if ( t.getSize() <=  (rootSize/2) )
+            return t;
+        else
+           return getSplitter(t.getChildes().get(0), rootSize);
+
+    }
+
 
 }
