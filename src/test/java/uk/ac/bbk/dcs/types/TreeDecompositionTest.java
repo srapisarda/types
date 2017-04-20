@@ -59,9 +59,14 @@ public class TreeDecompositionTest {
         Assert.assertEquals( 2, t.getChildes().size());
         Assert.assertEquals( 7, t.getSize());
         // assert splitter atoms's terms
-        t.getSplitter().getRoot().getVariables().forEach( term ->
-            Assert.assertTrue( ImmutableSet.of("X4", "X5").contains((String)term.getIdentifier()) )
+        TreeDecomposition separator = t.getSplitter();
+        separator.getRoot().getVariables().forEach(term ->
+            Assert.assertTrue( ImmutableSet.of("X3", "X4").contains((String)term.getIdentifier()) )
         );
+
+        Splitter splitter = new Splitter(t);
+
+
     }
 
 }

@@ -146,7 +146,7 @@ class TreeDecomposition {
 
     // todo: make it tailrec
     private TreeDecomposition getSplitter( TreeDecomposition t, int rootSize){
-        if ( t.getSize() <=  (rootSize/2) )
+        if ( t.getSize() <=  (rootSize/2) + 1)
             return t;
         else
            return getSplitter(t.getChildes().get(0), rootSize);
