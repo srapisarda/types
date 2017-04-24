@@ -12,9 +12,8 @@ import fr.lirmm.graphik.graal.api.core.Atom;
 import fr.lirmm.graphik.graal.api.core.Predicate;
 import uk.ac.bbk.dcs.util.ImmutableCollectors;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 
 import static com.tinkerpop.blueprints.Direction.IN;
 import static com.tinkerpop.blueprints.Direction.OUT;
@@ -61,6 +60,13 @@ class TreeDecomposition {
             Graph g = getSubGraph(graph, vertex, edge);
             return new TreeDecomposition(cqAtoms, g, edge.getVertex(IN));
         }).collect(ImmutableCollectors.toList());
+
+    }
+
+    private TreeDecomposition (ImmutableMap<Predicate, Atom> cqAtoms, Bag root, ImmutableList<TreeDecomposition> childes  ){
+        this.mapCqAtoms = cqAtoms;
+        this.root = root;
+        this.childes = childes;
 
     }
 
@@ -145,13 +151,38 @@ class TreeDecomposition {
     }
 
     // todo: make it tailrec
-    private TreeDecomposition getSplitter( TreeDecomposition t, int rootSize){
+    private TreeDecomposition getSplitter(  TreeDecomposition t, int rootSize){
         if ( t.getSize() <=  (rootSize/2) + 1)
-            return t;
-        else
-           return getSplitter(t.getChildes().get(0), rootSize);
+            return  t ;
+        else {
+            int maxsize =-1;
+            TreeDecomposition child = null;
+            for (TreeDecomposition c: t.getChildes()){
+                int size = c.getSize();
+                if (  size > maxsize){
+                    child=c;
+                    maxsize = size;
+                }
+            }
 
+            return getSplitter(child, rootSize);
+        }
     }
+
+
+
+    TreeDecomposition remove ( TreeDecomposition s  ){
+        List<TreeDecomposition> ret = new ArrayList<>();
+        for (TreeDecomposition c: this.getChildes()) {
+            if ( c!= s){
+                ret.add( c.remove(s) );
+            }
+        }
+
+        return  new TreeDecomposition( mapCqAtoms,  root,   ImmutableList.copyOf( ret) ) ;
+    }
+
+
 
 
 }
